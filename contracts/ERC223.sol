@@ -150,4 +150,55 @@ contract ERC223Token is IERC223 {
         emit TransferData(_empty);
         return true;
     }
+    
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {}
+     function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {}
+
+
+    function _mint(address account, uint256 amount) internal virtual {
+        require(account != address(0), "ERC20: mint to the zero address");
+
+        _beforeTokenTransfer(address(0), account, amount);
+
+        _totalSupply += amount;
+        unchecked {
+            // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
+            balances[account] += amount;
+        }
+        bytes memory _empty = hex"00000000";
+
+        emit Transfer(address(0), account, amount);
+        emit TransferData(_empty);
+
+        _afterTokenTransfer(address(0), account, amount);
+    }
+
+    function _burn(address account, uint256 amount) internal virtual {
+        require(account != address(0), "ERC20: burn from the zero address");
+
+        _beforeTokenTransfer(account, address(0), amount);
+
+        uint256 accountBalance = balances[account];
+        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+        unchecked {
+            balances[account] = accountBalance - amount;
+            // Overflow not possible: amount <= accountBalance <= totalSupply.
+            _totalSupply -= amount;
+        }
+        bytes memory _empty = hex"00000000";
+
+
+        emit Transfer(account, address(0), amount);
+        emit TransferData(_empty);
+
+        _afterTokenTransfer(account, address(0), amount);
+    } 
 }

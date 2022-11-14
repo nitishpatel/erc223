@@ -7,7 +7,7 @@ const deployOptions = {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    await deploy("ERC223Token", {
+    await deploy("ERC223Mintable", {
       from: deployer,
       args: [
         "Test Token",
@@ -18,4 +18,4 @@ const deployOptions = {
     });
   };
   
-  module.exports.tags = ["ERC223Token"];
+  module.exports.tags = ["ERC223Mintable"];
