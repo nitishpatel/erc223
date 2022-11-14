@@ -123,15 +123,7 @@ contract ERC223Token is IERC223 {
     uint _value,
     bytes calldata _data
   ) public override returns (bool success) {
-    // Standard function transfer similar to ERC20 transfer with no _data .
-    // Added due to backwards compatibility reasons .
-    balances[msg.sender] = balances[msg.sender] - _value;
-    balances[_to] = balances[_to] + _value;
-    if (Address.isContract(_to)) {
-      IERC223Recipient(_to).tokenReceived(msg.sender, _value, _data);
-    }
-    emit Transfer(msg.sender, _to, _value);
-    emit TransferData(_data);
+    _transfer(msg.sender, _to, _value, _data);
     return true;
   }
 
@@ -149,13 +141,7 @@ contract ERC223Token is IERC223 {
     uint _value
   ) public override returns (bool success) {
     bytes memory _empty = hex"00000000";
-    balances[msg.sender] = balances[msg.sender] - _value;
-    balances[_to] = balances[_to] + _value;
-    if (Address.isContract(_to)) {
-      IERC223Recipient(_to).tokenReceived(msg.sender, _value, _empty);
-    }
-    emit Transfer(msg.sender, _to, _value);
-    emit TransferData(_empty);
+    _transfer(msg.sender, _to, _value, _empty);
     return true;
   }
 
@@ -265,18 +251,15 @@ contract ERC223Token is IERC223 {
   function _transfer(
     address from,
     address to,
-    uint256 amount
+    uint256 amount,
+    bytes memory data
   ) internal virtual {
     require(from != address(0), "ERC20: transfer from the zero address");
     require(to != address(0), "ERC20: transfer to the zero address");
-    bytes memory _empty = hex"00000000";
-
-    _beforeTokenTransfer(from, to, amount);
-
     uint256 fromBalance = balances[from];
     require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
     if (Address.isContract(from)) {
-      IERC223Recipient(from).tokenReceived(msg.sender, amount, _empty);
+      IERC223Recipient(from).tokenReceived(msg.sender, amount, data);
     }
     unchecked {
       balances[from] = fromBalance - amount;
@@ -297,7 +280,8 @@ contract ERC223Token is IERC223 {
   ) public virtual override returns (bool) {
     address spender = msg.sender;
     _spendAllowance(from, spender, amount);
-    _transfer(from, to, amount);
+    bytes memory _empty = hex"00000000";
+    _transfer(from, to, amount, _empty);
     return true;
   }
 }
