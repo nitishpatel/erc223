@@ -18,4 +18,4 @@ const deployOptions = {
     });
   };
   
-  module.exports.tags = ["CustodianContract"];
+  module.exports.tags = ["ERC223Token"];
