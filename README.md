@@ -1,5 +1,6 @@
-### Please make sure you are at the [development branch](https://github.com/Dexaran/ERC223-token-standard/tree/development)  because now it is the main branch. Development branch includes the latest updates.
+### This Repo is has used work from the following repos:
 
+Dexaran/ERC223-token-standard : [Github Repo](https://github.com/Dexaran/ERC223-token-standard)
 ### EIP 223
 
 Read the original discussion and formal description here: https://github.com/ethereum/eips/issues/223
