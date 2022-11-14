@@ -213,7 +213,7 @@ contract ERC223Token is IERC223 {
     address spender,
     uint256 amount
   ) public virtual override returns (bool) {
-    address owner = _msgSender();
+    address owner = msg.sender;
     _approve(owner, spender, amount);
     return true;
   }
@@ -234,7 +234,7 @@ contract ERC223Token is IERC223 {
     address spender,
     uint256 addedValue
   ) public virtual returns (bool) {
-    address owner = _msgSender();
+    address owner = msg.sender;
     _approve(owner, spender, allowance(owner, spender) + addedValue);
     return true;
   }
@@ -243,7 +243,7 @@ contract ERC223Token is IERC223 {
     address spender,
     uint256 subtractedValue
   ) public virtual returns (bool) {
-    address owner = _msgSender();
+    address owner = msg.sender;
     _approve(owner, spender, allowance(owner, spender) - subtractedValue);
     return true;
   }
@@ -262,12 +262,40 @@ contract ERC223Token is IERC223 {
     }
   }
 
+  function _transfer(
+    address from,
+    address to,
+    uint256 amount
+  ) internal virtual {
+    require(from != address(0), "ERC20: transfer from the zero address");
+    require(to != address(0), "ERC20: transfer to the zero address");
+    bytes memory _empty = hex"00000000";
+
+    _beforeTokenTransfer(from, to, amount);
+
+    uint256 fromBalance = balances[from];
+    require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+    if (Address.isContract(from)) {
+      IERC223Recipient(from).tokenReceived(msg.sender, amount, _empty);
+    }
+    unchecked {
+      balances[from] = fromBalance - amount;
+      // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
+      // decrementing then incrementing.
+      balances[to] += amount;
+    }
+
+    emit Transfer(from, to, amount);
+
+    _afterTokenTransfer(from, to, amount);
+  }
+
   function transferFrom(
     address from,
     address to,
     uint256 amount
   ) public virtual override returns (bool) {
-    address spender = _msgSender();
+    address spender = msg.sender;
     _spendAllowance(from, spender, amount);
     _transfer(from, to, amount);
     return true;

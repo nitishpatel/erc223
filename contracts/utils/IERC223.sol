@@ -20,6 +20,11 @@ abstract contract IERC223 {
    */
   function balanceOf(address who) public view virtual returns (uint);
 
+  function allowance(
+    address owner,
+    address spender
+  ) external view virtual returns (uint256);
+
   /**
    * @dev Transfers `value` tokens from `msg.sender` to `to` address
    * and returns `true` on success.
@@ -39,11 +44,22 @@ abstract contract IERC223 {
     bytes calldata data
   ) public virtual returns (bool success);
 
+  function transferFrom(
+    address from,
+    address to,
+    uint256 value
+  ) public virtual returns (bool success);
+
+  function approve(
+    address spender,
+    uint256 amount
+  ) external virtual returns (bool);
+
   /**
    * @dev Event that is fired on successful transfer.
    */
   event Transfer(address indexed from, address indexed to, uint value);
-
+  event Approval(address indexed owner, address indexed spender, uint256 value);
   /**
    * @dev Additional event that is fired on successful transfer and logs transfer metadata,
    *      this event is implemented to keep Transfer event compatible with ERC20.
