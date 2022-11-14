@@ -17,6 +17,22 @@ module.exports = {
     apothem:{
       url: "https://erpc.apothem.network",
       accounts: {mnemonic: MNEMONIC},
+    },
+    mainnet:{
+      url: "https://mainnet.infura.io/v3/your-api-key",
+      accounts: {mnemonic: MNEMONIC},
+    },
+    goerli:{
+      url: "https://goerli.infura.io/v3/your-api-key",
+      accounts: {mnemonic: MNEMONIC},
+    },
+    sepolia:{
+      url: "https://rpc.sepolia.io",
+      accounts: {mnemonic: MNEMONIC},
+    },
+    mumbai:{
+      url: "https://rpc-mumbai.maticvigil.com",
+      accounts: {mnemonic: MNEMONIC},
     }
   }
 };
