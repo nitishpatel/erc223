@@ -16,6 +16,13 @@ const deployOptions = {
       ],
       ...deployOptions,
     });
+    const token = await ethers.getContract("ERC223Mintable", deployer);
+    await deploy("ReceiverContract", {
+      from: deployer,
+      args: [
+        token.address
+      ]
+    })
   };
   
-  module.exports.tags = ["ERC223Mintable"];
+  module.exports.tags = ["ERC223Mintable","ReceiverContract"];

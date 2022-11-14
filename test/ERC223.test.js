@@ -62,3 +62,36 @@ describe("ERC223", function () {
             .withArgs(deployer, account1, 100);
     });
 });
+
+
+describe("ReceiverContract", function () {
+    let TERC223Token;
+    let ReceiverContract;
+    beforeEach(async () => {
+        await deployments.fixture(["ERC223Mintable", "ReceiverContract"]);
+        const { deployer } = await getNamedAccounts();
+        TERC223Token = await ethers.getContract(
+            "ERC223Mintable",
+            deployer
+        );
+        ReceiverContract = await ethers.getContract(
+            "ReceiverContract",
+            deployer
+        );
+        await TERC223Token.mint(deployer, 1000);
+    }); 
+
+    it("should transfer to ReceiverContract", async () => {
+        const { deployer } = await getNamedAccounts();
+        await TERC223Token["transfer(address,uint256)"](ReceiverContract.address, 100);
+        expect(await TERC223Token.balanceOf(deployer)).to.equal(900);
+        expect(await TERC223Token.balanceOf(ReceiverContract.address)).to.equal(100);
+    });
+    it("should generate a transaction log", async () => {
+        const { deployer } = await getNamedAccounts();
+        await expect(TERC223Token["transfer(address,uint256)"](ReceiverContract.address, 100))
+            .not.to.be.reverted;
+        
+        console.log(await ReceiverContract.getAllTransactions());
+    })
+});
