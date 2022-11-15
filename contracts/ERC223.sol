@@ -258,16 +258,16 @@ contract ERC223Token is IERC223 {
     require(to != address(0), "ERC20: transfer to the zero address");
     uint256 fromBalance = balances[from];
     require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
-    if (Address.isContract(to)) {
-      IERC223Recipient(to).tokenReceived(msg.sender, amount, data);
-    }
+
     unchecked {
       balances[from] = fromBalance - amount;
       // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
       // decrementing then incrementing.
       balances[to] += amount;
     }
-
+    if (Address.isContract(to)) {
+      IERC223Recipient(to).tokenReceived(msg.sender, amount, data);
+    }
     emit Transfer(from, to, amount);
 
     _afterTokenTransfer(from, to, amount);
